@@ -1,0 +1,194 @@
+<div>
+  <mat-toolbar class="py-1 border mt-2" style="min-height: 1.5rem">
+    <p class="font-weight-bold mb-0">1. Reservation Details</p>
+  </mat-toolbar>
+
+  <mat-card class="border border-top-0 pt-2 pb-1 bg-light" style="box-shadow: none;">
+    <div class="list-group bg-light" *ngFor="let place of bookedPlaces; let i =index">
+      <div style="background-color: rgb(246, 246, 246);"
+        class="row no-gutters align-items-center justify-content-center list-group-item pt-2 pb-0 px-1"
+        *ngIf="place.changeDateClick">
+        <div class=" col-12 px-1 det-pop-form-holder">
+
+          <div class="det-pop-form fl100">
+            <ul class="row no-gutters">
+              <li class="col-xl-4 col-md-6 col-12 px-1 mb-0">
+                <dp-date-picker placeholder="Check in" [(ngModel)]="place.changeSearchFromDateTime" [config]="config"
+                  (onChange)="fromDateChange(place)" theme="dp-material" mode="daytime" #checkIn>
+                </dp-date-picker>
+              </li>
+              <li class="col-xl-4 col-md-6 col-12 px-1 mb-0">
+                <dp-date-picker placeholder="Check out" [(ngModel)]="place.changesearchToDateTime" [config]="config"
+                  (onChange)="toDateChange(place)" theme="dp-material" mode="daytime" #checkOut>
+                </dp-date-picker>
+                <span class="text-danger" *ngIf="!place.isDateRangeValid">please select valid date</span>
+              </li>
+              <li class="col-1 d-xl-block d-none">&nbsp;</li>
+              <li class="col-xl-3 col-12">
+                <div class="text-right">
+                  <button mat-button (click)="changeDateApply(place,i)" [disabled]="!place.isDateRangeValid"
+                    color="primary">Apply</button>
+                  <button mat-button (click)="changeDateCancelClick(place)">Cancel</button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div>
+        </div>
+      </div>
+      <div class="row no-gutters">
+        <div class="col-12 list-group-item py-1 bg-light px-2 mb-1">
+
+          <div class="row no-gutters">
+            <div class="" [ngClass]="{ 'col-8': (bookedPlaces.length>1), 'col-12': !(bookedPlaces.length>1) }"
+              style="word-wrap: break-word;">
+              <span class="font-weight-bold">
+                {{place?.propertyname || place?.propertyName}}
+              </span>
+            </div>
+            <div class="col-4 text-right" *ngIf="bookedPlaces.length>1">
+
+              <span (click)="removecartItem(i)" *ngIf="!hideRemoveCartItemBtn;"
+                style="cursor: pointer;font-size: 18px;float: right" class="text-danger">
+                <img style="max-width: 20px;" src="./assets/images/trash.png">
+              </span>
+              <span *ngIf="hideRemoveCartItemBtn" class="spinner-border text-danger" style="width: 1rem; height: 1rem;"
+                role="status">
+                <span class="sr-only">Loading...</span>
+              </span>
+
+            </div>
+            <div class="col-12 font-size-12">
+              <div class="">
+                <span class="font-weight-bold">Address: </span> {{place?.propertyGroupAddress}}
+              </div>
+            </div>
+            <p class="mb-0 col-md-6 col-12 font-size-12">
+              <span class=" font-weight-bold">From : </span> <span [ngClass]="{'text-danger':place.showDateError}">
+                {{place?.searchFromDateTime | date :'short' }}</span>
+            </p>
+            <p class="mb-0 col-md-6 col-12 font-size-12">
+              <span class="font-weight-bold">To : </span> <span
+                class=" ">{{place?.searchToDateTime | date :'short'}}</span>
+            </p>
+            <div class="col-12 font-size-12">
+              <div class="row no-gutters align-items-center">
+                <div class="col-md-6 col-12">
+                  <span class="font-weight-bold">Price: </span>
+                  <span class="btn rounded my-0 py-0 font-size-12" *ngIf="place.checkoutAmount==place.calculatedAmount">
+                    {{place.calculatedAmount | currency}}
+                  </span>
+                  <span class="btn rounded my-0 py-0 font-size-12" *ngIf="place.checkoutAmount!=place.calculatedAmount">
+                    <s>{{place.calculatedAmount | currency}}</s>
+                  </span>
+                  <!-- <span class="font-weight-bold" *ngIf="place.checkoutAmount!=place.calculatedAmount">Discount Price:
+                  </span> -->
+                  <span class="btn rounded my-0 py-0 font-size-12 text-danger"
+                    *ngIf="place.checkoutAmount!=place.calculatedAmount">{{place.checkoutAmount | currency}}</span>
+
+                  <span *ngIf="feeAmountCalculate(place.fees, place.checkoutAmount).additionalFeeCount>0">
+                    <span class="font-weight-bold">Additional
+                      Fees({{feeAmountCalculate(place.fees, place.checkoutAmount).additionalFeeCount}}):
+                    </span>
+                    <span class="btn rounded my-0 py-0 font-size-12">
+                      {{feeAmountCalculate(place.fees, place.checkoutAmount).extraAmount | currency}}
+                    </span>
+                  </span>
+
+
+
+                </div>
+                <div class="col-md-3 col-6">
+                  <div *ngIf="place.isSpotAvaliable" class="d-flex align-items-center">
+                    <span style="font-size: 18px;" class="material-icons mr-1">
+                      add_location
+                    </span>
+                    <span class="text-success">Spot available</span>
+                  </div>
+                  <img *ngIf="!place.isSpotAvaliable" src="./assets/images/soldout.png" class="mr-1"
+                    style="width: 50px;" />
+                </div>
+                <div class="col-md-3 col-6 text-right pr-3">
+                  <a class="btn-link" (click)="changeDateClick(place)">Change Date</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>
+<div *ngIf=" !isGuestUserClicked">
+  <mat-toolbar class="py-1 border mt-2" style="min-height: 1.5rem;">
+    <p class="font-weight-bold mb-0">2. Account Information</p>
+  </mat-toolbar>
+  <mat-card class="border border-top-0 pt-3" style="box-shadow: none;">
+    <div [hidden]='isGuestUser'>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="row no-gutters">
+          <div class="col-lg-6 px-3 pl-lg-4 mx-0 col-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Email Address" formControlName="email" (blur)="logValidationErrors()"
+                required>
+
+              <mat-error *ngIf="!loginForm?.get('email').valid &&
+                loginForm?.get('email').touched && 
+                loginForm?.get('email').hasError('email')">
+                Please enter a valid email address
+              </mat-error>
+              <mat-error *ngIf="!loginForm?.get('email').valid &&
+              loginForm?.get('email').touched && 
+              loginForm?.get('email').hasError('required')">
+                Email is Required
+              </mat-error>
+
+            </mat-form-field>
+          </div>
+          <div class="col-lg-6 px-3  mx-0 col-12">
+            <mat-form-field class="w-100">
+              <input matInput type="password" placeholder="Password" (blur)="logValidationErrors()"
+                formControlName="password" required /><br />
+              <mat-error>Passsword is required</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="col-12 d-flex align-items-center pl-0">
+          <div class="col pl-0">
+            <div class="pl-md-4 mt-1">
+              <button class="cart-btn w-md-auto d-md-inline-block" type="submit"
+                [disabled]="loginForm.invalid || loginButtonClicked">
+                <span class="spinner-border spinner-border-sm" *ngIf="loginButtonClicked" role="status"
+                  aria-hidden="true"></span>
+                {{loginButtonClicked?'Loading...':'LOGIN'}}
+
+              </button>
+              <a class="forget-btn ml-2  mt-md-0 mt-2" routerLink=""
+                (click)="router.navigateByUrl('pages/forgetpassword')">Forgot
+                Password?</a><br />
+            </div>
+            <div class="text-danger text-center" *ngIf="loginError">{{loginError}}</div>
+          </div>
+          <div class="text-md-right pt-md-0 col-auto">
+            <button class="cart-btn d-md-inline-block d-block col-12 col-md-auto" (click)="nextStep()">
+              Check out as guest
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div *ngIf='isGuestUser'>
+      <p class="mb-0 ">
+      <p class="mb-0">
+        <span class=" font-weight-bold">Email</span> : <span class="   mr-4">{{guestUserEmail}}</span>
+        <span class=" font-weight-bold">Name</span> : <span class="">{{userName}}</span>
+      </p>
+      <div>
+      </div>
+    </div>
+  </mat-card>
+</div>
+<!-- <div *ngIf="isGuestUserClicked" class="text-right">
+  <a class="btn-link text-danger" (click)="cancel()"> Back to Login</a>
+</div> -->

@@ -1,0 +1,82 @@
+<mat-card class="mt-1 px-lg-2 pt-1 px-0" style="box-shadow: none;">
+  <div class="">
+    <mat-toolbar style="max-height: 2.5rem;" class="py-1 border text-center">
+      <p class="font-weight-bold mb-1 w-100 text-center">Order Summary</p>
+    </mat-toolbar>
+    <div class="p-xl-1 pt-1 border">
+      <div class="d-flex mb-1">
+        <div class="col">Parking ({{bookedPlaces && bookedPlaces.length}}) : </div>
+        <div class="col text-right font-weight-bold ml-2">{{checkOutAmount | currency }}</div>
+      </div>
+      <div class="d-flex mb-1">
+        <div class="col">Total before tax : </div>
+        <div class="col text-right font-weight-bold ml-2">{{checkOutAmount | currency }}</div>
+      </div>
+      <div class="d-flex" *ngIf="additionalFeeAmount!=0">
+        <div class="col">Add Fees({{additionalFeeCount}}): </div>
+        <div class="col text-right font-weight-bold ml-2">{{ additionalFeeAmount | currency }}</div>
+      </div>
+      <div class="d-flex text-danger" *ngIf="promoCodeDiscountPercentage!=0">
+        <div class="col">Discount: </div>
+        <div class="col text-right font-weight-bold ml-2">-{{ promoCodeDiscountAmount | currency }}</div>
+      </div>
+      <hr />
+      <div class="d-flex my-1 text-danger font-weight-bold">
+        <div class="col">Order total </div>
+        <div class="col text-right  ml-2">{{ this.total | currency }}</div>
+      </div>
+      <hr />
+      <div class="bg-light p-2 pt-0" style="font-size: 0.7rem;">By placing your order, you are agree to Edyoos's 
+        <a style="cursor: pointer;" class="btn-link" (click)="openPrivacyNewWindow()"> Privacy Notice</a>
+        and
+        <a style="cursor: pointer;" class="btn-link" (click)="openTermsNewWindow()">Terms & Conditions </a> 
+      </div>
+    </div>
+  </div>
+</mat-card>
+<mat-card class="border mt-3 p-0 ml-0 mb-0 mr-0">
+  <div style="min-height: 300px;max-height: 100vh; overflow-y: scroll; overflow-x: hidden;overflow-wrap: break-word; ">
+    <mat-toolbar style="max-height: 2.5rem;" class="py-1 border text-center">
+      <p class="font-weight-bold mb-0 w-100 text-center">Your order details</p>
+    </mat-toolbar>
+    <div *ngIf=" bookedPlaces.length > 0">
+
+    </div>
+    <ng-container *ngFor="let bookedPlace of bookedPlaces; let i = index">
+      <div class="text-left border border-bottom-none p-2">
+        <div class="d-flex my-1">
+          <p class="mb-0" style="word-wrap: break-word;word-break: break-all;">
+            {{ bookedPlace?.propertyname || bookedPlace?.propertyName }}</p>
+          <div class="text-right col" *ngIf="bookedPlaces.length > 1">
+
+            <span *ngIf="!hideRemoveCartItemBtn" style="cursor: pointer;" (click)="removeItem(i)">
+              <img style="max-width: 20px;" src="./assets/images/trash.png">
+            </span>
+
+            <span *ngIf="hideRemoveCartItemBtn" class="spinner-border text-danger" style="width: 1rem; height: 1rem;"
+              role="status">
+              <span class="sr-only">Loading...</span>
+            </span>
+
+          </div>
+        </div>
+        <!-- <div class="">
+          <h3 class="mb-2 h3 font-weight-bold">
+            PRICE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="text-primary">{{ bookedPlace.checkoutAmount | currency }}</span>
+          </h3>
+        </div> -->
+        <div class="order-details">
+          <div class="text-center" *ngIf="bookedPlace.files"><img style="width: 100%;" class="img-fluid"
+              [src]="bookedPlace.files[0].filePath" /></div>
+          <div class="text-left mt-1">
+            <div>
+              <!-- {{ bookedPlace.details }} -->
+              <app-read-more [maxHeight]="75" [text]="bookedPlace.details"></app-read-more>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</mat-card>

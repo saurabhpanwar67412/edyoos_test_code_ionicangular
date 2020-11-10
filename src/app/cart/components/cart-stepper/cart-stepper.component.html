@@ -1,0 +1,47 @@
+<app-nav-bar></app-nav-bar>
+<p style="margin-top: 60px;display: hidden;">
+<div class="mx-lg-auto container-fluid mx-0 px-lg-2 px-0">
+  <div class="row no-gutters justify-content-center">
+    <div class="col-xl-6 col-lg-7 col-md-8 col-12">
+      <div class="container mb-2 px-0 px-lg-0 mx-lg-auto">
+        <div class="row no-gutters container mx-0 px-0 mb-2 mx-lg-auto jusify-content-lg-center">
+          <div class="col-12">
+            <div class="jusify-content-center">
+              <app-cart-information (next)="next($event)"></app-cart-information>
+              <app-cart-checkout [guestBtnClick]="guestBtnClick" [guestUserEmail]="guestUserEmailAdress"
+                (next)="next($event)" [formType]="formType" [pageTitle]="checkoutPageTitle">
+              </app-cart-checkout>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-5 col-md-4 col-12">
+      <div class="px-1 container mx-auto">
+        <app-orders></app-orders>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <ng-wizard [config]="config" class="big-font custom-step container-fluid"> -->
+<!-- <ng-wizard-step [title]="'1'" [description]="'Shopping Cart'">
+  <app-cart-information (next)="next($event)"></app-cart-information>
+</ng-wizard-step> -->
+
+<!-- <ng-wizard-step [title]="'2'" [description]="'Checkout'">
+    <app-cart-checkout (next)="next($event)" [formType]="formType" [pageTitle]="checkoutPageTitle"></app-cart-checkout>
+  </ng-wizard-step> -->
+
+<!-- <ng-wizard-step [title]="'3'" [description]="'Confirmation'">
+  <div class="custom-height">
+    <app-cart-confirmation></app-cart-confirmation>
+  </div> -->
+<!-- </ng-wizard-step> -->
+
+<!-- <ng-wizard-step [title]="'Step 4'" [description]="'Step 4 description'">
+    <span>Step 4 content</span>
+  </ng-wizard-step> -->
+<!-- </ng-wizard> -->
+
+<app-footer></app-footer>

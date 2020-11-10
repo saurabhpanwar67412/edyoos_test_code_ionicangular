@@ -1,0 +1,65 @@
+.font-courgette{
+    text-align: center;
+}
+.font-courgette p{
+    font-family: "Courgette", cursive;
+font-size: 4rem;
+color: #4fc059;
+margin: 6rem;
+font-weight: bold;
+border: 1rem solid #4fc059;
+border-radius: 10rem;
+transition:1.5s ;
+}
+.font-courgette p:hover{
+    border: 1rem solid #000000;
+    background-color: #4fc059;
+    color: #000000;
+    transition:1.5s ;
+}
+
+.position-bottom{
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+}
+.color-violet {
+    color: #4919db !important;
+}
+
+.color-orange {
+    color: #ff6868 !important;
+}
+
+header {
+    position: relative;
+}
+
+.logo {
+    position: absolute;
+    right: 24px;
+    bottom: 26px;
+}
+
+/* body{
+    font-family: 'Roboto', sans-serif;
+} */
+
+.header-border {
+    clip-path: polygon(20% 0%, 100% 0, 100% 20%, 100% 80%, 69% 100%, 20% 100%, 0 100%, 0 0);
+}
+.display-5 {
+    font-weight: bold;
+    font-size: 35px;
+}
+.con-width{
+width: 85%
+;}
+.main-head{
+   font-size: 30px; 
+}
+@media (max-width: 767.98px) {
+    .con-width{
+        width: 100%
+        ;}
+}

@@ -1,0 +1,298 @@
+<div class="fixed-top" style="z-index: 1000;" [formGroup]="searchForm">
+  <nav class="navbar navbar-expand-lg navbar-dark nav-st">
+    <!-- LOGO Starts -->
+    <div class="col-auto ml-0 pr-0 pl-0 pl-lg-3 order-1">
+      <div class="row no-gutters align-items-center">
+        <img src="assets/images/edyoos-logo.svg" class="img-logo" />
+        <a class="navbar-brand pl-2" href="#">Edyoos</a>
+      </div>
+    </div>
+    <!-- LOGO Ends -->
+    <!-- nav search -->
+    <div class="col-lg-6 col-md-7 mx-lg-0 mx-md-auto mx-0 col-12 px-0 mx-0 order-3 order-md-2">
+      <div class="w-100 p-0">
+        <div action="" accept-charset="UTF-8" method="get">
+          <div class="input-group search-group">
+            <div class="selectWrapperPlaceholder">
+              <select class="selectWrapper borderless select-center" name="vehicle" id="vehicle"
+                [formControlName]="SEARCH_FORM_METADATA.mode" (change)="changeSearchMode($event['target']?.value)">
+                <option *ngFor="let vehicleCategory of Mode | enumToArray" [value]="Mode[vehicleCategory]">
+                  {{vehicleCategory.replace('_',' ').replace('And_','&')}}</option>
+              </select>
+            </div>
+            <input #searchBar type="text" name="search" id="search" [formControlName]="SEARCH_FORM_METADATA.searchBar"
+              placeholder="Search for parking lot" class="form-control borderless" />
+            <input *ngIf="displayLength" type="text" name="boat_length" id="boat_length" maxlength="3" numbersOnly
+              [formControlName]="SEARCH_FORM_METADATA.vehicleLength" value="" placeholder="length in ft"
+              class="form-control col-3 borderless" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end nav search -->
+    <div class="ml-auto col-auto order-md-3 order-2" id="navbarText">
+      <ul class="ml-auto d-flex align-items-center nav-icon navbar-nav">
+        <li class="nav-link" #bagIconElement style="position: relative;" (click)="openCartDetails()">
+          <i class="fa fa-shopping-bag"></i>
+          <span class="notification" *ngIf="ordersCount > 0">{{ ordersCount }}</span>
+        </li>
+        <li class="nav-link">
+          <a [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <i class="fa fa-bars" aria-hidden="true"></i>
+          </a>
+          <mat-menu #menu="matMenu">
+            <button (click)="router.navigateByUrl('pages/login')" *ngIf="!isLoggedIn" mat-menu-item>
+              <span>Sign In</span>
+            </button>
+            <button *ngIf="isLoggedIn" (click)="router.navigateByUrl('user/dashboard')" mat-menu-item>
+              <span>Dashboard</span>
+            </button>
+            <button *ngIf="isLoggedIn" (click)="router.navigateByUrl('user/myOrders')" mat-menu-item>
+              <span>My Orders</span>
+            </button>
+            <button *ngIf="isLoggedIn" mat-menu-item>
+              <span>Payment</span>
+            </button>
+            <button *ngIf="isLoggedIn" (click)="router.navigateByUrl('profile')" mat-menu-item>
+              <span>Profile</span>
+            </button>
+            <button (click)="router.navigateByUrl('pages/register')" *ngIf="!isLoggedIn" mat-menu-item>
+              <span>Sign Up</span>
+            </button>
+            <button *ngIf="isLoggedIn" (click)="signOut()" mat-menu-item>
+              <span>Sign Out</span>
+            </button>
+          </mat-menu>
+        </li>
+      </ul>
+    </div>
+    <mat-card class="cart-details" [style]="'top:'+cartTopStyle">
+      <div #cartDivElement>
+        <div *ngIf="ordersCount==0" class="text-center" style="margin-top: 100px;">
+          <h3>There is no items available in the cart</h3>
+        </div>
+        <div *ngIf="ordersCount>0" class="cart-font">
+          <div class="text-center cart-title">
+            <strong>Order Summary</strong> ({{ordersCount}} Items)
+          </div>
+          <hr class="mb-0 mt-md-1 mt-0" />
+          <mat-card-content>
+            <div class="row mt-md-4 no-gutters flex-nowrap"
+              *ngFor="let propertyGroup of cartPropertyGroup; let i = index">
+              <div class="col-md-12">
+                <div class="row no-gutters align-items-center  flex-nowrap">
+                  <div class="col-7">
+                    <strong *ngIf="propertyGroup.propertyName"
+                      tooltip="{{ propertyGroup.propertyName }}">{{ commonService.stringSlicer( propertyGroup.propertyName,20)}}</strong>
+
+                    <strong *ngIf="propertyGroup.propertyname"
+                      tooltip="{{ propertyGroup.propertyname }}">{{ commonService.stringSlicer(propertyGroup.propertyname,20)}}</strong>
+                  </div>
+                  <div class="col-2 font-weight-bold">
+                    {{propertyGroup.calculatedAmount | currency}}
+                  </div>
+                  <div class="col pl-md-0 pl-2 ">
+                    <span (click)="deletePlace(i)" [hidden]="hideDeleteIcon" #deleteIconElement
+                      style="cursor: pointer;font-size: 18px;" class="text-danger ml-2 mt-1 float-md-right">
+                      <img style="max-width: 20px;" src="./assets/images/trash.png">
+                    </span>
+                    <span *ngIf="hideDeleteIcon" class="spinner-border text-danger mt-1 float-md-right"
+                      style="width: 1rem; height: 1rem;" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="row no-gutters align-items-center my-1">
+                  <div class="col-md-7 col-7">
+                    <span class="det-date-yy">{{propertyGroup?.searchFromDateTime| date:'short'}}</span>
+                  </div>
+                  <div class="col-md-5 col-5">
+                    <span class="det-date-yy">{{propertyGroup?.searchToDateTime| date:'short'}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr class="mb-0 mt-md-1 mt-0 " />
+            <div class="row mt-md-3 no-gutters align-items-center">
+              <div class="col-md-7 col-7">
+                <span class="font-weight-bold">Total ({{ordersCount}} Items) :</span>
+              </div>
+              <div class="col-md-5 col-5 font-weight-bold text-primary ">
+                {{total | currency}}
+              </div>
+            </div>
+            <hr class="mb-0" />
+          </mat-card-content>
+
+          <mat-card-actions class="text-center text-white my-0">
+            <button mat-raised-button color="warn" class="text-white" (click)="getCartAvailableSpots()">Proceed
+              to Checkout</button>
+          </mat-card-actions>
+        </div>
+      </div>
+    </mat-card>
+  </nav>
+  <div class="serach-date-form-container py-1">
+    <div class="container">
+      <div class="row" [formGroup]="dateForm">
+        <div class="col-xl-3 col-lg-3 col-md-5 col-12">
+          <label class="f12 d-block fcl3">Check In</label>
+          <dp-date-picker placeholder="Check in" [config]="config" [formControlName]="SEARCH_FORM_METADATA.fromDate"
+            (onChange)="fromDateChange($event)" theme="dp-material" mode="daytime" [displayDate]="fromDisplayDate"
+            #checkIn></dp-date-picker>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-5 col-12">
+          <label class="f12 d-block fcl3">Check Out</label>
+          <dp-date-picker placeholder="Check out" [config]="config" [formControlName]="SEARCH_FORM_METADATA.toDate"
+            (onChange)="toDateChange($event)" theme="dp-material" mode="daytime" [displayDate]="toDisplayDate"
+            #checkOut>
+          </dp-date-picker>
+
+          <span returnedValueType="Moment" style="color: red; font-size: 9px; display: block;"
+            *ngIf="!isDateRangeValid">
+            Check-out Date Cannot be Before Check-in Date</span>
+        </div>
+        <div class="offset-md-2 d-lg-none  d-block">
+          &nbsp;
+        </div>
+        <div class="col-auto mt-md-0 mt-1 px-0">
+          <label class="f12 d-md-block d-none">&nbsp;</label>
+          <button (click)="search()" class="btn-green-search"
+            [disabled]="!isDateRangeValid || this.searchForm.invalid || searchBtnDisabled">
+            <span class="spinner-border spinner-border-sm" *ngIf="searchBtnDisabled" role="status"
+              aria-hidden="true"></span>
+            {{searchBtnDisabled?'Loading...':'Search'}}
+
+          </button>
+        </div>
+        <div class="col-auto mt-md-4 mt-2 pt-md-1">
+          <strong class="mr-2">Sort by :</strong>
+          <ul class="sortby">
+            <li (click)="sort(SortMethodEnum.cheapest)" [ngClass]="{'active':sortMethod==SortMethodEnum.cheapest}">
+              Cheapest</li>
+            <li (click)="sort(SortMethodEnum.closest)" [ngClass]="{'active':sortMethod==SortMethodEnum.closest}">Closest
+            </li>
+          </ul>
+        </div>
+        <div class="col-auto">
+          <div class="d-flex align-items-baseline mt-1  pt-1 pt-lg-0 toggle-height">
+            <span class="vmap-lbl mt-0 mt-lg-1">View On Map</span>
+            <mat-slide-toggle class="mt-xl-2" [checked]="true" (click)="toggleDisplay()">
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- PAGE CONTAINER STARTS -->
+<div class="d-md-flex no-gutters mx-0 page-marin-top page-container-height">
+  <div class="map-warrper col order-2" *ngIf="!isHidden" id="map">
+    <agm-map [latitude]="currentLocation?.lat" [longitude]="currentLocation?.lng" [zoom]="15" [fullscreenControl]="true"
+      (mapReady)="onMapReady($event)" [mapTypeControl]="true" >
+      <agm-marker *ngFor="let place of places;let i=index" (markerClick)="clickedMarker(place.propertyGroupID, i)"
+        [latitude]="place?.latitude" [longitude]="place?.longitude" [label]="'$'+ place?.pricingAmount" animation="BOUNCE ">
+        <agm-info-window>
+          <strong>{{place?.propertyname}}</strong>
+        </agm-info-window>
+      </agm-marker>
+    </agm-map>
+  </div>
+  <div [ngClass]="{ 'col-md-6': !isHidden, 'col-12': isHidden }" style="overflow: scroll;" class="order-md-1 order-1 scrollingevt">
+    <div class="row no-gutters">
+
+      <div class="text-center col-md-12 col-lg-12 mt-5" *ngIf="displayedPlaces.length==0 && !httpError">
+        <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;margin-top: 10rem" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+
+      <ng-container *ngIf="placesLoaded">
+        <div *ngFor="let place of displayedPlaces; let i = index"
+          [ngClass]="{ 'col-lg-6 col-md-3 col-12': !isHidden, 'col-md-3 col-12': isHidden }">
+          <div class="result-grid p-2" style="min-height: 278px;" (mouseenter)="initMap(place.latitude,place.longitude,displayedPlaces,place.propertyGroupID)" [id]="place.propertyGroupID">
+            <div class="result-grid-img">
+              <img *ngIf="place?.files" style="width: 100%;" class="img-fluid" [src]="place.files[0].filePath"
+                alt="parking image" id="plan" />
+              <div class="result-grid-addc" *ngIf="place.isSpotAvaliable">
+                <button class="result-grid-cartbtn" [tooltip]="'Add to Bag'" *ngIf="!hideAddCartBtn">
+                  <i class="fa fa-shopping-bag transform" (click)="addToCart(place)"></i>
+                </button>
+                <span *ngIf="hideAddCartBtn" class="spinner-border text-primary" style="width: 2rem; height: 2rem;"
+                  role="status">
+                  <span class="sr-only">Loading...</span>
+                </span>
+              </div>
+            </div>
+            <div class="result-grid-content">
+              <div class="fl100 bfont result-grid-hdr" tooltip="{{ place.propertyname}}">
+                {{ commonService.stringSlicer(place.propertyname,40)}}</div>
+              <div class="res-det-container f14  fl100">
+                <span class="float-left fcl3">
+                  {{ place.distance}} miles away
+                </span>
+                <span class="float-right fcsaffron">
+                  <a (click)="goToPlace(place)">View details</a>
+                </span>
+              </div>
+              <div class="res-det-price f14  fl100">
+                <div class="float-left det-aminity-list mb-1">
+                  <ul>
+                    <li *ngFor="let subCategory of place.amenities?.split(',');let i=index">
+                      <!-- <mat-icon aria-hidden="false" aria-label="Example home icon"
+                        [matTooltip]="place.amenities?.split(',')[i]"> {{ subCategory }}</mat-icon>
+                         -->
+                      <span class="ameimg" [tooltip]="place.amenities?.split(',')[i]">
+                        <img
+                          src="{{imageurl}}/{{subCategory.trim().replace(' ','').replace('/','').toLowerCase() | removewhitespaces}}.png"
+                          alt="" />
+                      </span>
+                      <!-- {{place.amenities?.split(',')[i]}}                          -->
+                    </li>
+                    <li class="mb-2" *ngIf="!place.amenities?.split(',')">
+                      &nbsp;
+                    </li>
+                  </ul>
+                </div>
+                <div class="float-right fcblue f15 bfont" *ngIf="place.pricingCode"><span
+                    class="f14">$</span>{{place.pricingAmount}}<span
+                    class="f14 fcl3 ml-1">{{pricingType[place.pricingCode].replace('_',' ')}}</span></div>
+              </div>
+              <div *ngIf="!place.isDateAvaliable && place.isSpotAvaliable" class="text-danger">
+                <strong>{{place.datetimeRangeResponse}}</strong>
+              </div>
+              <div class="res-btn-container text-center fl100">
+                <button *ngIf="place.isSpotAvaliable" class="btn-blue-fill bfont" [disabled]="!place.isSpotAvaliable"
+                  (click)="getAvailableSpots(place)">Reserve Now<span class="btn-fig">$
+                    {{place.calculatedAmount}}</span></button>
+                <button *ngIf="!place.isSpotAvaliable" [disabled]="!place.isSpotAvaliable" class="btn btn-danger">Sold
+                  Out</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="hideExtra" class="col-12 text-center">
+          <button id="showallclick" class="btn place-btn mb-4 mt-3" (click)="showAllPlaces()">
+            Show All ({{ placesCount }})
+          </button>
+        </div>
+      </ng-container>
+      <div *ngIf="httpError" class="error-wrapper">
+        <section class="error-panel p-lg-5 p-sm-2 p-1">
+          <p class="p error-heading text-center">
+            <span class="text-uppercase font-weight-bold">
+              WE'RE SORRY
+            </span>
+          </p>
+          <p class="error-content px-lg-5 px-sm-2 p-1 py-2 ">
+            {{httpError}}
+          </p>
+          <div class="mb-2 text-center">
+            <button routerLink="/pages/contact" class="btn-green-search px-lg-4">
+              Contact Us </button></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- PAGE CONTAINER ENDS -->
